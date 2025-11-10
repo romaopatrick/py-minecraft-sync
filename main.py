@@ -1,9 +1,17 @@
+import glob
 import os
-import sync
-import compress
+import platform
+
 from dotenv import load_dotenv
 
-SAVES_FOLDER = "C:\\Users\\patri\\AppData\\Roaming\\.minecraft\\saves\\p3tworld"
+import compress
+import sync
+
+WIN_SAVES_PATH = "C:\\Users\\patri\\AppData\\Roaming\\.minecraft\\saves\\p3tworld"
+LINUX_SAVES_PATH = "/home/p3t/.minecraft/saves/p3tworld"
+PLATFORM = platform.uname().system.lower()
+
+
 PATH = "./backup.zip"
 REMOTE_PATH = "/backup.zip"
 
@@ -11,10 +19,21 @@ REMOTE_PATH = "/backup.zip"
 def main():
     load_dotenv()
 
-    output = compress.zip_folder(SAVES_FOLDER, output_path=PATH)
-    sync.sync_file(output, REMOTE_PATH)
+    saves_folder = LINUX_SAVES_PATH if 'linux' in PLATFORM else WIN_SAVES_PATH
 
-    compress.unzip_file(output, SAVES_FOLDER)
+    files_list = glob.glob(os.path.join(saves_folder, '*'))
+
+    local_mtime = -1
+
+    if files_list:
+        latest_file = max(files_list, key=os.path.getmtime)
+        local_mtime = os.path.getmtime(os.path.join(latest_file))
+
+
+    output = compress.zip_folder(saves_folder, output_path=PATH)
+    sync.sync_file(output, REMOTE_PATH, local_mtime=local_mtime)
+
+    compress.unzip_file(output, saves_folder)
 
 
 

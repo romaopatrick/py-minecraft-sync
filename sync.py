@@ -1,6 +1,9 @@
 import os
-from dotenv import load_dotenv
+
 import dropbox
+import dropbox.exceptions
+import dropbox.files
+from dotenv import load_dotenv
 
 # === CONFIGURAÇÕES ===
 load_dotenv()
@@ -34,7 +37,7 @@ def download_file(local_path: str, remote_path: str):
         print(f"❌ Erro ao baixar: {e}")
 
 
-def sync_file(local_path: str, remote_path: str):
+def sync_file(local_path: str, remote_path: str, local_mtime: float):
     """
     Sincroniza o backup:
     - Se o arquivo local for mais novo, envia.
@@ -45,8 +48,6 @@ def sync_file(local_path: str, remote_path: str):
         remote_mtime = metadata.client_modified.timestamp()
     except dropbox.exceptions.ApiError:
         remote_mtime = 0
-
-    local_mtime = os.path.getmtime(local_path) if os.path.exists(local_path) else 0
 
     if local_mtime > remote_mtime:
         upload_file(local_path, remote_path)
