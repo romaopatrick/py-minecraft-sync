@@ -49,9 +49,17 @@ def sync_file(local_path: str, remote_path: str, local_mtime: float):
     except dropbox.exceptions.ApiError:
         remote_mtime = 0
 
-    if local_mtime > remote_mtime:
+    should_upload = local_mtime > remote_mtime
+    confirm_action("upload" if should_upload else 'download')
+
+    if should_upload:
         upload_file(local_path, remote_path)
     elif remote_mtime > local_mtime:
         download_file(local_path, remote_path)
     else:
         print("🔁 Arquivo já está sincronizado.")
+
+def confirm_action(action: str):
+    input(f'Action: {action}. Press any Key to confirm, or CTRL+C to cancel')
+
+
