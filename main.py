@@ -7,8 +7,8 @@ from dotenv import load_dotenv
 import compress
 import sync
 
-WIN_SAVES_PATH = "C:\\Users\\patri\\AppData\\Roaming\\.minecraft_server"
-LINUX_SAVES_PATH = "/home/p3t/.minecraft_server"
+WIN_SAVES_PATH = "C:\\Users\\patri\\AppData\\Roaming\\.minecraft_server/p3tworld"
+LINUX_SAVES_PATH = "/home/p3t/.minecraft_server/p3tworld"
 PLATFORM = platform.uname().system.lower()
 
 
